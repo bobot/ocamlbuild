@@ -108,9 +108,9 @@ INSTALL_LIBDIR=$(DESTDIR)$(LIBDIR)
 INSTALL_BINDIR=$(DESTDIR)$(BINDIR)
 
 ifeq ($(OCAML_NATIVE), true)
-all: byte native
+all: byte native META
 else
-all: byte
+all: byte META
 endif
 
 byte: ocamlbuild.byte ocamlbuildlib.cma
@@ -242,11 +242,11 @@ endif
 	echo ']' >> ocamlbuild.install
 	echo >> ocamlbuild.install
 
-install-lib-basics: META
+install-lib-basics:
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
 	$(CP) META src/signatures.mli $(INSTALL_LIBDIR)/ocamlbuild
 
-install-lib-basics-opam: META
+install-lib-basics-opam:
 	echo '  "META"' >> ocamlbuild.install
 	echo '  "src/signatures.mli" {"signatures.mli"}' >> ocamlbuild.install
 
@@ -257,6 +257,8 @@ META: META.in VERSION
 	| sed s/%%VERSION%%/$$(cat VERSION)/ META.in \
 	| grep -v "#%%.*" \
 	> META
+clean::
+	rm -f META
 
 install-lib-byte:
 	mkdir -p $(INSTALL_LIBDIR)/ocamlbuild
@@ -282,7 +284,7 @@ else
 install-lib: install-lib-basics install-lib-byte
 endif
 
-install-lib-findlib: META
+install-lib-findlib:
 ifeq ($(OCAML_NATIVE), true)
 	ocamlfind install ocamlbuild \
 	  META src/signatures.mli $(INSTALL_LIB) $(INSTALL_LIB_OPT)
